@@ -19,7 +19,6 @@ public class CarRentalController {
 
 
     @GetMapping("/api/v1/car/{id}")
-
     //http://localhost:8080/api/v1/car/124
     public ResponseEntity<String> carWithPathVariable(@PathVariable(value = "id") Long id) {
         String returnValue = "Car " + id;
@@ -27,17 +26,11 @@ public class CarRentalController {
     }
 
     @GetMapping("/api/v1/cars")
-    //http://localhost:8080/api/v1/helloworld?test=1
+    //http://localhost:8080/api/v1/cars?test=1
     public ResponseEntity<String> carRentalWithRequestParam(@RequestParam(value = "test", required = false) String myParam) {
         String returnValue = defaultCarRentalService.getGreeting();
         return new ResponseEntity<String>(returnValue, HttpStatus.OK);
     }
-
-
-
-
-
-
 
 
 
