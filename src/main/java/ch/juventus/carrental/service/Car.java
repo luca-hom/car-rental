@@ -2,6 +2,7 @@ package ch.juventus.carrental.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Car {
 
@@ -102,6 +103,35 @@ public class Car {
     public void setRentals(ArrayList<Rental> rentals) {
         this.rentals = rentals;
     }
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", gearShift=" + gearShift +
+                ", seats=" + seats +
+                ", pricePerDay=" + pricePerDay +
+                ", airCondition=" + airCondition +
+                ", rentals=" + rentals +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Car car = (Car) o;
+        return Objects.equals(id, car.id) && Objects.equals(name, car.name) && type == car.type && gearShift == car.gearShift && Objects.equals(seats, car.seats) && Objects.equals(pricePerDay, car.pricePerDay) && Objects.equals(airCondition, car.airCondition) && Objects.equals(rentals, car.rentals);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, type, gearShift, seats, pricePerDay, airCondition, rentals);
+    }
+
+
 }
 
 

@@ -54,6 +54,31 @@ class CarRentalDatabaseTest {
         //clean up and delete testFile
         Files.deleteIfExists(tP);
 
+    }
+
+    @Test
+    void testGetCarListFromJsonFile() throws IOException {
+
+        Path tP = Paths.get(testPath);
+        Files.createFile(tP);
+        Files.writeString(tP, "[{\"id\":0,\"name\":\"TestCar\",\"type\":\"CABRIO\",\"gearShift\":\"AUTOMATIC\",\"seats\":2,\"pricePerDay\":100.0,\"airCondition\":true,\"rentals\":[{\"startDate\":[2022,1,1],\"endDate\":[2022,1,2],\"totalPrice\":100.0}]}]");
+
+
+        System.out.println(carRentalDatabase.getCarListFromJsonFile(testPath));
+
+        Rental rental = new Rental(LocalDate.of(2022,01,01),LocalDate.of(2022, 01, 02), 100D);
+        ArrayList<Rental> rentalList = new ArrayList<Rental>();
+        rentalList.add(rental);
+
+
+        ArrayList<Car> testCarList = new ArrayList<Car>();
+        testCarList.add(new Car(0L,"TestCar", Type.CABRIO, GearShift.AUTOMATIC, 2, (double) 100, true, rentalList));
+
+        assertEquals(testCarList,carRentalDatabase.getCarListFromJsonFile(testPath));
+        //clean up and delete testFile
+        Files.deleteIfExists(tP);
+
 
     }
+
 }

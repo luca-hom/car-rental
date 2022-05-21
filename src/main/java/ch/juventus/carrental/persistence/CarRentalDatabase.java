@@ -73,5 +73,30 @@ public class CarRentalDatabase implements CarRepository {
     }
 
 
+    public List<Car> getCarListFromJsonFile(String path) {
+
+        try {
+            Path p = Paths.get(path);
+            if (Files.notExists(p)) {
+              throw new IllegalArgumentException("path to json file must be valid");
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            //adds LocalDate to jackson
+            mapper.registerModule(new JavaTimeModule());
+
+            List<Car> carList;
+            carList = mapper.readValue(new File(path), new TypeReference<ArrayList<Car>>() {});
+
+            return carList;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+
 
 }

@@ -1,6 +1,7 @@
 package ch.juventus.carrental.service;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Rental {
     private LocalDate startDate;
@@ -38,5 +39,28 @@ public class Rental {
 
     public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Rental{" +
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", totalPrice=" + totalPrice +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rental rental = (Rental) o;
+        return Objects.equals(startDate, rental.startDate) && Objects.equals(endDate, rental.endDate) && Objects.equals(totalPrice, rental.totalPrice);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startDate, endDate, totalPrice);
     }
 }
