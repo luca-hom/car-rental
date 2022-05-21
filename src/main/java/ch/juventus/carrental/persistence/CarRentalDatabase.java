@@ -21,7 +21,6 @@ public class CarRentalDatabase implements CarRepository {
         return "Hello from Car-Database";
     }
 
-    @Override
     public void writeCarToJsonFile(Car car, String path) {
 
         try {
@@ -78,7 +77,7 @@ public class CarRentalDatabase implements CarRepository {
         try {
             Path p = Paths.get(path);
             if (Files.notExists(p)) {
-              throw new IllegalArgumentException("path to json file must be valid");
+              throw new IllegalArgumentException("path to json file must be valid / file doesnt exist yet");
             }
 
             ObjectMapper mapper = new ObjectMapper();

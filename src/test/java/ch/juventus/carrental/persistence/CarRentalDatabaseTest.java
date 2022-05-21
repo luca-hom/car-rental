@@ -5,22 +5,17 @@ import ch.juventus.carrental.service.GearShift;
 import ch.juventus.carrental.service.Rental;
 import ch.juventus.carrental.service.Type;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class CarRentalDatabaseTest {
 
@@ -43,6 +38,7 @@ class CarRentalDatabaseTest {
 
         //testCar is created with test-rental-array -> function call
         carRentalDatabase.writeCarToJsonFile(testCar, testPath);
+
 
 
         Path tP = Paths.get(testPath);
