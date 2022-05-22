@@ -5,8 +5,9 @@ import ch.juventus.carrental.service.DefaultCarRentalService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
+import java.util.Objects;
 
 
 //read out parameter, prepare them and call correct class(service)
@@ -24,7 +25,13 @@ public class CarRentalController {
     @GetMapping("/api/v1/car/{id}")
     //http://localhost:8080/api/v1/car/124
     public ResponseEntity<String> carWithPathVariable(@PathVariable(value = "id") Long id) {
-        String returnValue = "Car " + id;
+
+
+        String returnValue = defaultCarRentalService.getCarById(id);
+        if (Objects.equals(returnValue, "null")) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "car with this id not found");
+        }
+
         return new ResponseEntity<String>(returnValue, HttpStatus.OK);
     }
 
@@ -41,7 +48,6 @@ public class CarRentalController {
     @PostMapping("/api/v1/car")
     public void registerNewCar(@RequestBody Car newCar) {
         defaultCarRentalService.createNewCar(newCar);
-
     }
 
 

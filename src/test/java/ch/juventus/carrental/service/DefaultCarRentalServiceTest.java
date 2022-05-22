@@ -28,13 +28,22 @@ class DefaultCarRentalServiceTest {
     }
 
     @Test
-    void getCarList() {
+    void testGetCarList() {
 
         System.out.println(defaultCarRentalService.getCarList());
 
-        //TODO write actual Test lol
-
-
+        //TODO write Test
 
     }
+
+    @Test
+    void testGetCarById() {
+
+        System.out.println(defaultCarRentalService.getCarById(0L));
+
+        //TODO write Test
+
+    }
+
+
 }

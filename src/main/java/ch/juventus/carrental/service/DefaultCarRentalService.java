@@ -29,6 +29,7 @@ public class DefaultCarRentalService implements CarRentalService {
     public String getCarList() {
 
         try {
+            //TODO find proper way to init ObjectMapper and reuse it in this class
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
 
@@ -46,6 +47,33 @@ public class DefaultCarRentalService implements CarRentalService {
         }
 
     }
+
+    public String getCarById(Long id) {
+        try {
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            List<Car> carList = carRepository.getCarListFromJsonFile("src/main/resources/cars.json");
+            System.out.println(carList);
+
+
+            mapper.writeValue(out,
+
+            carList.stream().filter(car -> id.equals(car.getId())).findFirst().orElse(null)
+            );
+
+            return out.toString();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
 
 
     public void createNewCar(Car newCar) {
