@@ -12,7 +12,7 @@ import java.util.Objects;
 
 //read out parameter, prepare them and call correct class(service)
 @RestController
-//@CrossOrigin("http://localhost:4200") //disable if testing with YARC
+@CrossOrigin("http://localhost:4200") //disable if testing with YARC
 public class CarRentalController {
 
     private final DefaultCarRentalService defaultCarRentalService;

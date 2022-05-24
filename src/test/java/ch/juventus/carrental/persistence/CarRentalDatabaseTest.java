@@ -29,7 +29,7 @@ class CarRentalDatabaseTest {
     @Test
     void testIfCarObjectIsWrittenToJsonFile() throws IOException {
 
-        Rental rental = new Rental(LocalDate.of(2022,01,01),LocalDate.of(2022, 01, 02), 100D);
+        Rental rental = new Rental(LocalDate.of(2022,01,01),LocalDate.of(2022, 01, 02));
         ArrayList<Rental> rentalList = new ArrayList<Rental>();
         rentalList.add(rental);
 
@@ -62,7 +62,7 @@ class CarRentalDatabaseTest {
 
         System.out.println(carRentalDatabase.getCarListFromJsonFile(testPath));
 
-        Rental rental = new Rental(LocalDate.of(2022,01,01),LocalDate.of(2022, 01, 02), 100D);
+        Rental rental = new Rental(LocalDate.of(2022,01,01),LocalDate.of(2022, 01, 02));
         ArrayList<Rental> rentalList = new ArrayList<Rental>();
         rentalList.add(rental);
 
