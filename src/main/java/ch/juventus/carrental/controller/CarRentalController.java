@@ -12,7 +12,7 @@ import java.util.Objects;
 
 //read out parameter, prepare them and call correct class(service)
 @RestController
-//@CrossOrigin("http://localhost:4200")
+//@CrossOrigin("http://localhost:4200") //disable if testing with YARC
 public class CarRentalController {
 
     private final DefaultCarRentalService defaultCarRentalService;
@@ -38,9 +38,22 @@ public class CarRentalController {
     @GetMapping("/api/v1/cars")
     //http://localhost:8080/api/v1/cars?filter=1
     public ResponseEntity<String> carRentalWithRequestParam(@RequestParam(value = "filter", required = false) String filter) {
+        String returnValue = "test";
+
+        if (filter != null) {
+            returnValue = defaultCarRentalService.getFilteredCars(filter);
+
+            if (Objects.equals(returnValue, "NO VALID FILTERQUERY")) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+        }
+
+        else {
+            returnValue = defaultCarRentalService.getCarList();
+        }
 
 
-        String returnValue = defaultCarRentalService.getCarList();
         return new ResponseEntity<String>(returnValue, HttpStatus.OK);
     }
 

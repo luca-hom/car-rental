@@ -6,4 +6,6 @@ public interface CarRentalService {
     String getGreeting();
     String getCarList();
     String getCarById(Long id);
+    String getFilteredCars(String filterQuery);
+
 }
