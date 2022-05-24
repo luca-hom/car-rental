@@ -96,9 +96,10 @@ public class DefaultCarRentalService implements CarRentalService {
 
 
 
+
                 List<Car> filteredList = carList
                         .stream()
-                        .filter(car -> car.getName().toLowerCase().contains(node.get("searchQuery").textValue())
+                        .filter(car -> car.getName().toLowerCase().contains(node.get("searchQuery").asText().toLowerCase())
                                 //&&car.getType().equals(node.findValues("type"))
                                 //TODO: all other Filters
 

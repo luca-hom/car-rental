@@ -8,4 +8,5 @@ public enum Type {
     COUPE,
     ESTATE
 
+
 }
