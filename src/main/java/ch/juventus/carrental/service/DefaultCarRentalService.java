@@ -2,6 +2,7 @@ package ch.juventus.carrental.service;
 
 import ch.juventus.carrental.persistence.CarRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -92,19 +93,18 @@ public class DefaultCarRentalService implements CarRentalService {
 
                 List<Car> carList = carRepository.getCarListFromJsonFile("src/main/resources/cars.json");
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
+                List<Car> filteredList = carList;
 
+                JsonNode searchQuery = node.get("searchQuery");
+                if (!searchQuery.isNull()) {
+                    filteredList = carList
+                            .stream()
+                            .filter(car -> car.getName().toLowerCase().contains(searchQuery.asText().toLowerCase())
+                                    //TODO: change filter to DTO-Design-Pattern
+                            )
+                            .collect(Collectors.toList());
+                }
 
-
-
-
-                List<Car> filteredList = carList
-                        .stream()
-                        .filter(car -> car.getName().toLowerCase().contains(node.get("searchQuery").asText().toLowerCase())
-                                //&&car.getType().equals(node.findValues("type"))
-                                //TODO: all other Filters
-
-                        )
-                        .collect(Collectors.toList());
 
 
 
@@ -130,6 +130,38 @@ public class DefaultCarRentalService implements CarRentalService {
     public void createNewCar(Car newCar) {
 
         carRepository.writeCarToJsonFile(newCar, "src/main/resources/cars.json");
+
+    }
+
+    public boolean createNewRental(Long id, Rental rental) {
+
+
+        List<Rental> rentalList = carRepository.readRentalsOfCar("src/main/resources/cars.json", id);
+
+        //TODO: check if rental is already in existing rentalList
+
+        if (rentalList.stream().anyMatch(rentals -> rentals.getStartDate().equals(rental.getStartDate()) || rentals.getEndDate().equals(rental.getStartDate()))) {
+            return false;
+        }
+
+        if (rentalList.stream().anyMatch(rentals -> rentals.getStartDate().equals(rental.getEndDate()) || rentals.getEndDate().equals(rental.getEndDate()))) {
+            return false;
+        }
+
+
+
+        if (rental.getStartDate()==null || rental.getEndDate()==null) {
+
+            return false;
+
+        }
+
+
+        carRepository.writeRentalToCar("src/main/resources/cars.json", id, rental);
+        return true;
+
+
+
 
     }
 

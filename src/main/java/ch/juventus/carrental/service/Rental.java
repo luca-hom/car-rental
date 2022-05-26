@@ -3,7 +3,7 @@ package ch.juventus.carrental.service;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Rental extends Car{
+public class Rental {
     private LocalDate startDate;
     private LocalDate endDate;
     private Double totalPrice;
@@ -11,9 +11,7 @@ public class Rental extends Car{
     public Rental(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
-        this.totalPrice = totalPrice;
     }
-
 
 
     public Rental() {
@@ -36,11 +34,12 @@ public class Rental extends Car{
     }
 
     public Double getTotalPrice() {
-        Double totalPrice = super.getPricePerDay() * (this.startDate.compareTo(this.endDate));
         return totalPrice;
     }
 
-
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
 
     @Override
     public String toString() {

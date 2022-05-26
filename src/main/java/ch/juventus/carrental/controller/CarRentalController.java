@@ -2,6 +2,7 @@ package ch.juventus.carrental.controller;
 
 import ch.juventus.carrental.service.Car;
 import ch.juventus.carrental.service.DefaultCarRentalService;
+import ch.juventus.carrental.service.Rental;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +61,25 @@ public class CarRentalController {
 
     @PostMapping("/api/v1/car")
     public void registerNewCar(@RequestBody Car newCar) {
+
         defaultCarRentalService.createNewCar(newCar);
+
+    }
+
+
+    @PostMapping("api/v1/car/{id}/rental")
+    public ResponseEntity<Boolean> registerNewRental(@PathVariable (value = "id") Long id, @RequestBody Rental newRental) {
+
+
+        boolean status = defaultCarRentalService.createNewRental(id, newRental);
+
+        if (status) {
+
+            return new ResponseEntity<Boolean>(HttpStatus.OK);
+
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 

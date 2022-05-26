@@ -8,4 +8,6 @@ public interface CarRentalService {
     String getCarById(Long id);
     String getFilteredCars(String filterQuery);
 
+    boolean createNewRental(Long id, Rental rental);
+
 }
