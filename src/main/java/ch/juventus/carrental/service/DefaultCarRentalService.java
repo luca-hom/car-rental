@@ -91,6 +91,25 @@ public class DefaultCarRentalService implements CarRentalService {
 
     }
 
+    public boolean deleteCarById(Long id) {
+
+        try {
+
+            carRepository.checkIfCarIdIsValid(id, "src/main/resources/cars.json");
+
+            carRepository.deleteCarFromJsonFile(id, "src/main/resources/cars.json");
+
+            return true;
+
+        }
+
+        catch (IllegalArgumentException e) {
+            return false;
+        }
+
+
+    }
+
 
 
     public String getFilteredCars(String filterQuery) {
@@ -151,6 +170,10 @@ public class DefaultCarRentalService implements CarRentalService {
 
     }
 
+
+
+
+
     public boolean createNewRental(Long id, Rental rental) {
 
 
@@ -177,6 +200,8 @@ public class DefaultCarRentalService implements CarRentalService {
 
 
     }
+
+
 
 
 

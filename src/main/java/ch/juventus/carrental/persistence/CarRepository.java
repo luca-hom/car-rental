@@ -17,5 +17,7 @@ public interface CarRepository {
 
     void checkIfCarIdIsValid (Long id, String path);
 
+    void deleteCarFromJsonFile(Long id, String path);
+
 
 }

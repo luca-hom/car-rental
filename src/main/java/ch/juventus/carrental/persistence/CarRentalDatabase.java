@@ -117,7 +117,6 @@ public class CarRentalDatabase implements CarRepository {
 
         return false;
 
-
     }
 
 
@@ -177,6 +176,24 @@ public class CarRentalDatabase implements CarRepository {
 
 
     }
+
+    public void deleteCarFromJsonFile(Long id, String path) {
+
+        try {
+            List<Car> carList = this.getCarListFromJsonFile(path);
+
+            carList.remove(IntStream.range(0, carList.size())
+                    .filter(car -> carList.get(car).getId().equals(id))
+                    .findFirst()
+                    .getAsInt());
+            mapper.writeValue(new File(path), carList);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 
     public List<Car> getCarListFromJsonFile(String path) {
 

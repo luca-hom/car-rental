@@ -53,9 +53,16 @@ public class CarRentalController {
     }
 
 
+    @DeleteMapping( "/api/v1/car/{id}")
+    public ResponseEntity<String> deleteCarWithPathVariable(@PathVariable(value = "id")Long id) {
 
+        if (carRentalService.deleteCarById(id)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
 
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
+    }
 
 
 

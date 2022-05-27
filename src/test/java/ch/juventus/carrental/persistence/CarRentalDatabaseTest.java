@@ -158,6 +158,31 @@ class CarRentalDatabaseTest {
 
     }
 
+    @Test
+    void testIfCarIsDeletable() throws IOException {
+        Path p = Paths.get(testPath);
+
+        try {
+
+            Files.createFile(p);
+            Files.writeString(p, "[{\"id\":1,\"name\":\"TestCar\",\"type\":\"CABRIO\",\"gearShift\":\"AUTOMATIC\",\"seats\":2,\"pricePerDay\":100.0,\"airCondition\":true,\"rentals\":null}]");
+
+            carRentalDatabase.deleteCarFromJsonFile(1L, testPath);
+            System.out.println(Files.readString(p));
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            Files.deleteIfExists(p);
+        }
+
+
+
+
+    }
+
 
 
 }
