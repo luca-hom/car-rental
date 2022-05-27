@@ -86,7 +86,7 @@ public class CarRentalDatabase implements CarRepository {
             Car replaceCar = carList.get(IntStream.range(0, carList.size())
                     .filter(car -> carList.get(car).getId().equals(id))
                     .findFirst()
-                    .getAsInt()); //what happens if range is over max-value of in??? --> still works but why?
+                    .getAsInt());
 
 
 
@@ -149,7 +149,8 @@ public class CarRentalDatabase implements CarRepository {
             return;
         }
 
-        throw new RuntimeException("no valid id");
+        throw new IllegalArgumentException("no valid id");
+
 
     }
 
@@ -157,6 +158,8 @@ public class CarRentalDatabase implements CarRepository {
     public void replaceCarToJsonFile(String path, Long id, Car replaceCar) {
 
         try {
+            this.checkIfCarIdIsValid(id, path);
+
             List<Car> carList = this.getCarListFromJsonFile(path);
 
             //replace car with id read of json file
@@ -166,6 +169,7 @@ public class CarRentalDatabase implements CarRepository {
                     .getAsInt(), replaceCar);
 
             mapper.writeValue(new File(path), carList);
+
 
         } catch (IOException e) {
             throw new RuntimeException(e);

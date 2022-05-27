@@ -57,7 +57,7 @@ class CarRentalDatabaseTest {
 
         Path tP = Paths.get(testPath);
         Files.createFile(tP);
-        Files.writeString(tP, "[{\"id\":0,\"name\":\"TestCar\",\"type\":\"CABRIO\",\"gearShift\":\"AUTOMATIC\",\"seats\":2,\"pricePerDay\":100.0,\"airCondition\":true,\"rentals\":[{\"startDate\":[2022,1,1],\"endDate\":[2022,1,2],\"totalPrice\":null}]}]");
+        Files.writeString(tP, "[{\"id\":0,\"name\":\"TestCar\",\"type\":\"CABRIO\",\"gearShift\":\"AUTOMATIC\",\"seats\":2,\"pricePerDay\":100.0,\"airCondition\":true,\"rentals\":null}]");
 
 
         System.out.println(carRentalDatabase.getCarListFromJsonFile(testPath));
@@ -68,7 +68,7 @@ class CarRentalDatabaseTest {
 
 
         ArrayList<Car> testCarList = new ArrayList<Car>();
-        testCarList.add(new Car(0L,"TestCar", Type.CABRIO, GearShift.AUTOMATIC, 2, (double) 100, true, rentalList));
+        testCarList.add(new Car(0L,"TestCar", Type.CABRIO, GearShift.AUTOMATIC, 2, (double) 100, true));
 
         assertEquals(testCarList,carRentalDatabase.getCarListFromJsonFile(testPath));
         //clean up and delete testFile
@@ -114,7 +114,6 @@ class CarRentalDatabaseTest {
 
     }
 
-    //TODO: test for checkIfCarIdIsValid
 
 
     @Test
@@ -123,7 +122,7 @@ class CarRentalDatabaseTest {
         Files.createFile(p);
         Files.writeString(p, "[{\"id\":1,\"name\":\"TestCar\",\"type\":\"CABRIO\",\"gearShift\":\"AUTOMATIC\",\"seats\":2,\"pricePerDay\":100.0,\"airCondition\":true,\"rentals\":null}]");
 
-        Car replaceCar = new Car("TestCar", Type.CABRIO, GearShift.AUTOMATIC, 4, 200D, true, null);
+        Car replaceCar = new Car("TestCar", Type.CABRIO, GearShift.AUTOMATIC, 4, 200D, true);
 
         carRentalDatabase.replaceCarToJsonFile(testPath,1L, replaceCar);
 
@@ -132,6 +131,29 @@ class CarRentalDatabaseTest {
         System.out.println(Files.readString(p));
 
         Files.deleteIfExists(p);
+
+
+    }
+
+
+    @Test
+    void testIfIdCheckerIsWorking() throws IOException {
+
+        Path p = Paths.get(testPath);
+        Files.createFile(p);
+        Files.writeString(p, "[{\"id\":1,\"name\":\"TestCar\",\"type\":\"CABRIO\",\"gearShift\":\"AUTOMATIC\",\"seats\":2,\"pricePerDay\":100.0,\"airCondition\":true,\"rentals\":null}]");
+
+        try {
+            carRentalDatabase.checkIfCarIdIsValid(2L, testPath);
+            System.out.println("valid");
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println("not valid");
+        }
+
+        finally {
+            Files.deleteIfExists(p);
+        }
 
 
     }

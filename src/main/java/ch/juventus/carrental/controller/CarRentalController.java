@@ -1,6 +1,7 @@
 package ch.juventus.carrental.controller;
 
 import ch.juventus.carrental.service.Car;
+import ch.juventus.carrental.service.CarRentalService;
 import ch.juventus.carrental.service.DefaultCarRentalService;
 import ch.juventus.carrental.service.Rental;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,10 @@ import java.util.Objects;
 @CrossOrigin("http://localhost:4200") //disable if testing with YARC
 public class CarRentalController {
 
-    private final DefaultCarRentalService defaultCarRentalService;
+    private final CarRentalService carRentalService;
 
-    public CarRentalController(DefaultCarRentalService defaultCarRentalService) {
-        this.defaultCarRentalService = defaultCarRentalService;
+    public CarRentalController(DefaultCarRentalService carRentalService) {
+        this.carRentalService = carRentalService;
     }
 
 
@@ -28,7 +29,7 @@ public class CarRentalController {
     public ResponseEntity<String> carWithPathVariable(@PathVariable(value = "id") Long id) {
 
 
-        String returnValue = defaultCarRentalService.getCarById(id);
+        String returnValue = carRentalService.getCarById(id);
         if (Objects.equals(returnValue, "null")) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "car with this id not found");
         }
@@ -36,13 +37,35 @@ public class CarRentalController {
         return new ResponseEntity<String>(returnValue, HttpStatus.OK);
     }
 
+
+    @PutMapping( "/api/v1/car/{id}")
+    public ResponseEntity<String> postCarWithPathVariable(@PathVariable(value = "id")Long id, @RequestBody Car replaceCar) {
+
+        if (!replaceCar.getRentals().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "rental list of this car cant be changed");
+        }
+
+        if (carRentalService.updateCarById(id, replaceCar)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+
+
+
+
+
+
     @GetMapping("/api/v1/cars")
     //http://localhost:8080/api/v1/cars?filter=1
     public ResponseEntity<String> carRentalWithRequestParam(@RequestParam(value = "filter", required = false) String filter) {
-        String returnValue = "test";
+        String returnValue;
 
         if (filter != null) {
-            returnValue = defaultCarRentalService.getFilteredCars(filter);
+            returnValue = carRentalService.getFilteredCars(filter);
 
             if (Objects.equals(returnValue, "NO VALID FILTERQUERY")) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -51,7 +74,7 @@ public class CarRentalController {
         }
 
         else {
-            returnValue = defaultCarRentalService.getCarList();
+            returnValue = carRentalService.getCarList();
         }
 
 
@@ -62,7 +85,7 @@ public class CarRentalController {
     @PostMapping("/api/v1/car")
     public void registerNewCar(@RequestBody Car newCar) {
 
-        defaultCarRentalService.createNewCar(newCar);
+        carRentalService.createNewCar(newCar);
 
     }
 
@@ -71,7 +94,7 @@ public class CarRentalController {
     public ResponseEntity<Boolean> registerNewRental(@PathVariable (value = "id") Long id, @RequestBody Rental newRental) {
 
 
-        boolean status = defaultCarRentalService.createNewRental(id, newRental);
+        boolean status = carRentalService.createNewRental(id, newRental);
 
         if (status) {
 

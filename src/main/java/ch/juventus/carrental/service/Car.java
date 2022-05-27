@@ -15,27 +15,7 @@ public class Car {
     private Boolean airCondition;
     private ArrayList<Rental> rentals;
 
-//TODO: check if constructor with arraylist rentals is really needed
-    public Car(Long id, String name, Type type, GearShift gearShift, Integer seats, Double pricePerDay, Boolean airCondition, ArrayList<Rental> rentals) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.gearShift = gearShift;
-        this.seats = seats;
-        this.pricePerDay = pricePerDay;
-        this.airCondition = airCondition;
-        this.rentals = rentals;
-    }
 
-    public Car(String name, Type type, GearShift gearShift, Integer seats, Double pricePerDay, Boolean airCondition, ArrayList<Rental> rentals) {
-        this.name = name;
-        this.type = type;
-        this.gearShift = gearShift;
-        this.seats = seats;
-        this.pricePerDay = pricePerDay;
-        this.airCondition = airCondition;
-        this.rentals = rentals;
-    }
 
     public Car(Long id, String name, Type type, GearShift gearShift, Integer seats, Double pricePerDay, Boolean airCondition) {
         this.id = id;

@@ -71,8 +71,26 @@ public class DefaultCarRentalService implements CarRentalService {
             throw new RuntimeException(e);
         }
 
+    }
+
+
+
+    public boolean updateCarById(Long id, Car car) {
+
+        try {
+
+            carRepository.checkIfCarIdIsValid(id, "src/main/resources/cars.json");
+
+            carRepository.replaceCarToJsonFile("src/main/resources/cars.json", id, car);
+
+            return true;
+        }
+        catch (IllegalArgumentException e) {
+            return false;
+        }
 
     }
+
 
 
     public String getFilteredCars(String filterQuery) {
@@ -148,19 +166,14 @@ public class DefaultCarRentalService implements CarRentalService {
             return false;
         }
 
-
-
         if (rental.getStartDate()==null || rental.getEndDate()==null) {
 
             return false;
 
         }
 
-
         carRepository.writeRentalToCar("src/main/resources/cars.json", id, rental);
         return true;
-
-
 
 
     }
