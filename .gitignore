@@ -34,3 +34,6 @@ build/
 
 #Database files
 /src/main/resources/cars.json
+
+#Javadoc location
+/javadoc/
