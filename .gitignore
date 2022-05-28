@@ -37,3 +37,6 @@ build/
 
 #Javadoc location
 /javadoc/
+
+#logs
+/CarRentalApp.log

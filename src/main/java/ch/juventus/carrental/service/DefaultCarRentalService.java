@@ -3,6 +3,8 @@ package ch.juventus.carrental.service;
 import ch.juventus.carrental.persistence.CarRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 public class DefaultCarRentalService implements CarRentalService {
 
     private final CarRepository carRepository;
+
+    final Logger logger = LoggerFactory.getLogger(DefaultCarRentalService.class);
 
     private final ObjectMapper mapper = new ObjectMapper(); //<-- reuse instance of ObjectMapper!!
 
@@ -41,10 +45,12 @@ public class DefaultCarRentalService implements CarRentalService {
 
             List<Car> carList = carRepository.getCarListFromJsonFile("src/main/resources/cars.json");
             mapper.writeValue(out, carList);
+            logger.info("car list found");
             return out.toString();
 
 
         } catch (IOException e) {
+            logger.warn("Runtime Exception, check if database has been initialised yet by adding a new car");
             throw new RuntimeException(e);
         }
 
@@ -61,6 +67,7 @@ public class DefaultCarRentalService implements CarRentalService {
     public String getCarById(Long id) {
         try {
 
+            //checking and logging in control layer
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
             List<Car> carList = carRepository.getCarListFromJsonFile("src/main/resources/cars.json");
@@ -74,6 +81,7 @@ public class DefaultCarRentalService implements CarRentalService {
             return out.toString();
 
         } catch (IOException e) {
+
             throw new RuntimeException(e);
         }
 
@@ -99,9 +107,12 @@ public class DefaultCarRentalService implements CarRentalService {
 
             carRepository.replaceCarToJsonFile("src/main/resources/cars.json", id, car);
 
+            logger.info("Successfully changed car to: {}", car);
+
             return true;
         }
         catch (IllegalArgumentException e) {
+            logger.warn("car with id: {} not found!", id);
             return false;
         }
 
@@ -122,11 +133,14 @@ public class DefaultCarRentalService implements CarRentalService {
 
             carRepository.deleteCarFromJsonFile(id, "src/main/resources/cars.json");
 
+            logger.info("Successfully deleted car");
+
             return true;
 
         }
 
         catch (IllegalArgumentException e) {
+            logger.warn("car with id: {} not found!", id);
             return false;
         }
 
@@ -156,8 +170,10 @@ public class DefaultCarRentalService implements CarRentalService {
             filteredList.sort(Comparator.comparing(Car::getPricePerDay));
 
             mapper.writeValue(out, filteredList);
+            logger.info("car list filtering successful");
             return out.toString();
         } catch (IOException e) {
+            logger.warn("Runtime Exception, check if database has been initialised yet by adding a new car");
             throw new RuntimeException(e);
         }
 
@@ -252,27 +268,37 @@ public class DefaultCarRentalService implements CarRentalService {
      */
     public boolean createNewRental(Long id, Rental rental) {
 
+        try {
+            carRepository.checkIfCarIdIsValid(id, "src/main/resources/cars.json");
 
-        List<Rental> rentalList = carRepository.readRentalsOfCar("src/main/resources/cars.json", id);
+            List<Rental> rentalList = carRepository.readRentalsOfCar("src/main/resources/cars.json", id);
 
 
-        if (rentalList.stream().anyMatch(r -> (r.getStartDate().datesUntil(r.getEndDate()).toList().contains(rental.getStartDate())))) {
+            if (rentalList.stream().anyMatch(r -> (r.getStartDate().datesUntil(r.getEndDate()).toList().contains(rental.getStartDate())))) {
+                logger.warn("there is already a rental for car(id: {}) taken at date: {} ", id, rental.getStartDate());
+                return false;
+            }
+
+            if (rentalList.stream().anyMatch(r -> (r.getStartDate().datesUntil(r.getEndDate()).toList().contains(rental.getEndDate())))) {
+                logger.warn("there is already a rental for car(id: {}) taken at date: {} ", id, rental.getEndDate());
+                return false;
+            }
+
+            if (rental.getStartDate() == null || rental.getEndDate() == null) {
+                logger.warn("cannot rent car with rental of no StartDate or EndDate");
+
+                return false;
+
+            }
+
+            carRepository.writeRentalToCar("src/main/resources/cars.json", id, rental);
+            logger.info("successfully rented car(id: {})", id);
+            return true;
+        }
+        catch (IllegalArgumentException e) {
+            logger.warn("car with id: {} not found!", id);
             return false;
         }
-
-        if (rentalList.stream().anyMatch(r -> (r.getStartDate().datesUntil(r.getEndDate()).toList().contains(rental.getEndDate())))) {
-            return false;
-        }
-
-        if (rental.getStartDate()==null || rental.getEndDate()==null) {
-
-            return false;
-
-        }
-
-        carRepository.writeRentalToCar("src/main/resources/cars.json", id, rental);
-        return true;
-
 
     }
 
