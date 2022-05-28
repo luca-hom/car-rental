@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface CarRepository {
 
-    String loadGreeting();
     void writeCarToJsonFile(Car car, String path);
     List<Car> getCarListFromJsonFile(String path);
     boolean writeRentalToCar(String path, Long id, Rental rental);

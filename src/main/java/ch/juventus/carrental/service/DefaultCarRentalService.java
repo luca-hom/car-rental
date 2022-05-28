@@ -7,11 +7,14 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+/**
+ * This class acts as the default service class for the REST API
+ */
 @Service
 public class DefaultCarRentalService implements CarRentalService {
 
@@ -24,13 +27,11 @@ public class DefaultCarRentalService implements CarRentalService {
         mapper.registerModule(new JavaTimeModule());
     }
 
-    public String getGreeting() {
-        //all logic happens here
-        String greeting = carRepository.loadGreeting();
-        return greeting;
-    }
-
-
+    /**
+     * This method returns the whole car list.
+     *
+     * @return returns a list of all cars formatted in json as a String
+     */
     public String getCarList() {
 
         try {
@@ -48,6 +49,13 @@ public class DefaultCarRentalService implements CarRentalService {
         }
 
     }
+
+    /**
+     * This method returns the car with the given id formatted in json as a String.
+     *
+     * @param id id of the car
+     * @return json-formatted String of the car
+     */
 
 
     public String getCarById(Long id) {
@@ -71,13 +79,23 @@ public class DefaultCarRentalService implements CarRentalService {
 
     }
 
-
+    /**
+     * This method updates a car with new values. The list of rentals are still being kept.
+     *
+     * @param id id of the car
+     * @param car car that is going to be replaced
+     * @return if id is valid it returns true, else false
+     */
 
     public boolean updateCarById(Long id, Car car) {
 
         try {
 
             carRepository.checkIfCarIdIsValid(id, "src/main/resources/cars.json");
+
+            List<Rental> rentalArrayList= carRepository.readRentalsOfCar("src/main/resources/cars.json", id);
+
+            car.setRentals((ArrayList<Rental>) rentalArrayList);
 
             carRepository.replaceCarToJsonFile("src/main/resources/cars.json", id, car);
 
@@ -88,6 +106,13 @@ public class DefaultCarRentalService implements CarRentalService {
         }
 
     }
+
+    /**
+     * This method deletes the car with the given id.
+     *
+     * @param id id of the car
+     * @return if id is valid it returns true, else false
+     */
 
     public boolean deleteCarById(Long id) {
 
@@ -108,7 +133,13 @@ public class DefaultCarRentalService implements CarRentalService {
     }
 
 
-
+    /**
+     * This method filters out the cars in the database that match with the filterQuery.
+     * The method checks if the car match with the doesCarMatch-method
+     *
+     * @param filterQuery the filterQuery in json format
+     * @return the filtered list of cars formatted in json as String
+     */
     public String getFilteredCars(String filterQuery) {
 
         try {
@@ -133,7 +164,14 @@ public class DefaultCarRentalService implements CarRentalService {
     }
 
 
-
+    /**
+     * This method compares the given car with the given carFilter.
+     * It compares it with the Data Transfer Object of the car.
+     *
+     * @param car The car to compare to
+     * @param dto The CarFilterDTO (filterQuery) to compare to
+     * @return true if the car can be shown in list, false if not
+     */
     public boolean doesCarMatch(Car car, CarFilterDto dto) {
 
 
@@ -192,6 +230,11 @@ public class DefaultCarRentalService implements CarRentalService {
     }
 
 
+    /**
+     * creates a new car in the database
+     *
+     * @param newCar car object without the rentals
+     */
 
     public void createNewCar(Car newCar) {
 
@@ -200,7 +243,13 @@ public class DefaultCarRentalService implements CarRentalService {
     }
 
 
-
+    /**
+     * creates a new rental for the given car(id)
+     *
+     * @param id id of the car
+     * @param rental rental object that has to be added
+     * @return true if rental object is valid, false if not
+     */
     public boolean createNewRental(Long id, Rental rental) {
 
 

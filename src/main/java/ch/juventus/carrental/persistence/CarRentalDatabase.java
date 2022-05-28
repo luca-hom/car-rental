@@ -16,18 +16,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * This class is the default database-class. Manipulation and readings of the database (json-file) is being made here.
+ *
+ */
+
 @Repository
 public class CarRentalDatabase implements CarRepository {
 
-    public String loadGreeting() {
-        return "Hello from Car-Database";
-    }
 
     private final ObjectMapper mapper = new ObjectMapper(); //<-- reuse instance of ObjectMapper!!
     public CarRentalDatabase() {
         mapper.registerModule(new JavaTimeModule());
     }
 
+
+    /**
+     * This method writes the car object to the json file. If there is no json file
+     * at the given path yet, it creates one. The index of the car is calculated.
+     *
+     * @param car the car without id that has to be written into the json file
+     * @param path the path to the json file
+     */
     public void writeCarToJsonFile(Car car, String path) {
 
         try {
@@ -75,6 +85,18 @@ public class CarRentalDatabase implements CarRepository {
 
     }
 
+    /**
+     * This method writes a rental object to a json file with the given path.
+     * It calculates the totalPrice of the rental object in this method.
+     * It uses the replaceCarToJsonFile method to write the rental into the car.
+     *
+     *
+     * @param path the path to the json file
+     * @param id id of the car
+     * @param rental rental object that has to be written
+     * @return if the given id is valid it returns true, else false
+     */
+
     public boolean writeRentalToCar(String path, Long id, Rental rental) {
 
         List<Car> carList = this.getCarListFromJsonFile(path);
@@ -120,6 +142,15 @@ public class CarRentalDatabase implements CarRepository {
     }
 
 
+    /**
+     * This method reads out all rentals of the car with the given id.
+     *
+     *
+     * @param path the path to the json file
+     * @param id the id of the car
+     * @return a list of every rental of the given car
+     */
+
     public List<Rental> readRentalsOfCar(String path, Long id) {
 
         this.checkIfCarIdIsValid(id, path);
@@ -140,6 +171,17 @@ public class CarRentalDatabase implements CarRepository {
 
     }
 
+    /**
+     *
+     * This method checks if the id of a car is valid in the given json file.
+     *
+     * @param id id of the car
+     * @param path path to the json file
+     *
+     * @throws IllegalArgumentException if the method hasn't found any car with this id
+     *
+     */
+
     public void checkIfCarIdIsValid (Long id, String path) {
 
         List<Car> carList = this.getCarListFromJsonFile(path);
@@ -153,6 +195,14 @@ public class CarRentalDatabase implements CarRepository {
 
     }
 
+
+    /**
+     * This method replaces a car in the given json file.
+     *
+     * @param path path to the json file
+     * @param id id of the car to be replaced
+     * @param replaceCar car object to replace
+     */
 
     public void replaceCarToJsonFile(String path, Long id, Car replaceCar) {
 
@@ -177,6 +227,13 @@ public class CarRentalDatabase implements CarRepository {
 
     }
 
+    /**
+     * This method deletes the car from the given json file
+     *
+     * @param id id of the car that has to be deleted
+     * @param path path of the json file
+     */
+
     public void deleteCarFromJsonFile(Long id, String path) {
 
         try {
@@ -194,6 +251,14 @@ public class CarRentalDatabase implements CarRepository {
 
     }
 
+
+    /**
+     * This method reads out the json file with the given path and returns the
+     * full car list
+     *
+     * @param path path to the json file
+     * @return List of all cars in the json file
+     */
 
     public List<Car> getCarListFromJsonFile(String path) {
 

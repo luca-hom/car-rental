@@ -8,7 +8,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
 
-
+/**
+ * This class acts as the controller class for the REST API
+ */
 //read out parameter, prepare them and call correct class(service)
 @RestController
 @CrossOrigin("http://localhost:4200") //disable if testing with YARC
