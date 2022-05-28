@@ -1,3 +1,4 @@
-# car-rental
+# Car Rental API FS 2022
 
-Hello World
+## Description
+API for a car rental frontend. Cars are written to a local file. 
