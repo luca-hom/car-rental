@@ -122,7 +122,7 @@ public class DefaultCarRentalService implements CarRentalService {
             filteredList = carList.stream().filter(car -> doesCarMatch(car, filterDto))
                     .collect(Collectors.toList());
 
-            filteredList.sort(Comparator.comparing(Car::getPricePerDay).reversed());
+            filteredList.sort(Comparator.comparing(Car::getPricePerDay));
 
             mapper.writeValue(out, filteredList);
             return out.toString();
