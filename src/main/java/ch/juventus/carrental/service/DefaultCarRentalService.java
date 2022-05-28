@@ -1,15 +1,13 @@
 package ch.juventus.carrental.service;
 
 import ch.juventus.carrental.persistence.CarRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,7 +105,6 @@ public class DefaultCarRentalService implements CarRentalService {
             return false;
         }
 
-
     }
 
 
@@ -115,50 +112,82 @@ public class DefaultCarRentalService implements CarRentalService {
     public String getFilteredCars(String filterQuery) {
 
         try {
-            ObjectNode node = mapper.readValue(filterQuery, ObjectNode.class);
 
-            if (node.has("startDate")
-                    && node.has("endDate")
-                    && node.has("searchQuery")
-                    && node.has("type")
-                    && node.has("gearShift")
-                    && node.has("minPricePerDay")
-                    && node.has("maxPricePerDay")
-                    && node.has("seats")
-                    && node.has("airCondition")) {
+            CarFilterDto filterDto = mapper.readValue(filterQuery, CarFilterDto.class);
 
+            List<Car> carList = carRepository.getCarListFromJsonFile("src/main/resources/cars.json");
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            List<Car> filteredList;
 
-                List<Car> carList = carRepository.getCarListFromJsonFile("src/main/resources/cars.json");
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                List<Car> filteredList = carList;
+            filteredList = carList.stream().filter(car -> doesCarMatch(car, filterDto))
+                    .collect(Collectors.toList());
 
-                JsonNode searchQuery = node.get("searchQuery");
-                if (!searchQuery.isNull()) {
-                    filteredList = carList
-                            .stream()
-                            .filter(car -> car.getName().toLowerCase().contains(searchQuery.asText().toLowerCase())
-                                    //TODO: change filter to DTO-Design-Pattern
-                            )
-                            .collect(Collectors.toList());
-                }
+            filteredList.sort(Comparator.comparing(Car::getPricePerDay).reversed());
 
-
-
-
-                mapper.writeValue(out, filteredList);
-                return out.toString();
-            }
-
-            else {return "NO VALID FILTERQUERY";}
-
-
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            mapper.writeValue(out, filteredList);
+            return out.toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+
+
+    public boolean doesCarMatch(Car car, CarFilterDto dto) {
+
+
+        List<Rental> rentalList = car.getRentals();
+        if (rentalList != null && !rentalList.isEmpty()) {
+
+
+            if (dto.getEndDate() != null && (rentalList.stream().anyMatch
+                    (rental -> (rental.getStartDate().datesUntil(rental.getEndDate()).toList().contains(dto.getEndDate()))))) {
+
+                return false;
+            }
+
+            if (dto.getStartDate() != null && (rentalList.stream().anyMatch
+                    (rental -> (rental.getStartDate().datesUntil(rental.getEndDate()).toList().contains(dto.getStartDate()))))) {
+
+                return false;
+            }
+
+
+        }
+
+
+
+        if (dto.getSearchQuery() != null && !(car.getName().toLowerCase().contains(dto.getSearchQuery().toLowerCase()))) {
+            return false;
+        }
+
+        if (dto.getType() != null && !(dto.getType().contains(car.getType()))) {
+            return false;
+        }
+
+        if (dto.getGearShift() != null && (dto.getGearShift() != car.getGearShift())) {
+            return false;
+        }
+
+        if (dto.getMinPricePerDay() != null && !(dto.getMinPricePerDay() <= car.getPricePerDay())) {
+            return false;
+        }
+
+        if (dto.getMaxPricePerDay() != null && !(dto.getMaxPricePerDay() >= car.getPricePerDay())) {
+            return false;
+        }
+
+
+        if (dto.getSeats() != null && !(dto.getSeats().contains(car.getSeats()))) {
+            return false;
+        }
+
+        if (dto.getAirCondition() != null && (dto.getAirCondition() != car.getAirCondition())) {
+            return false;
+        }
+
+        return true;
 
     }
 
@@ -172,20 +201,17 @@ public class DefaultCarRentalService implements CarRentalService {
 
 
 
-
-
     public boolean createNewRental(Long id, Rental rental) {
 
 
         List<Rental> rentalList = carRepository.readRentalsOfCar("src/main/resources/cars.json", id);
 
-        //TODO: check if rental is already in existing rentalList
 
-        if (rentalList.stream().anyMatch(rentals -> rentals.getStartDate().equals(rental.getStartDate()) || rentals.getEndDate().equals(rental.getStartDate()))) {
+        if (rentalList.stream().anyMatch(r -> (r.getStartDate().datesUntil(r.getEndDate()).toList().contains(rental.getStartDate())))) {
             return false;
         }
 
-        if (rentalList.stream().anyMatch(rentals -> rentals.getStartDate().equals(rental.getEndDate()) || rentals.getEndDate().equals(rental.getEndDate()))) {
+        if (rentalList.stream().anyMatch(r -> (r.getStartDate().datesUntil(r.getEndDate()).toList().contains(rental.getEndDate())))) {
             return false;
         }
 
@@ -200,9 +226,6 @@ public class DefaultCarRentalService implements CarRentalService {
 
 
     }
-
-
-
 
 
 

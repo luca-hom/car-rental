@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 class DefaultCarRentalServiceTest {
 
@@ -44,6 +46,9 @@ class DefaultCarRentalServiceTest {
         //TODO write Test
 
     }
+
+
+
 
 
 

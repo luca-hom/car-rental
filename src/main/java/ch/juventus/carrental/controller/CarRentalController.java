@@ -1,9 +1,6 @@
 package ch.juventus.carrental.controller;
 
-import ch.juventus.carrental.service.Car;
-import ch.juventus.carrental.service.CarRentalService;
-import ch.juventus.carrental.service.DefaultCarRentalService;
-import ch.juventus.carrental.service.Rental;
+import ch.juventus.carrental.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -73,10 +70,6 @@ public class CarRentalController {
 
         if (filter != null) {
             returnValue = carRentalService.getFilteredCars(filter);
-
-            if (Objects.equals(returnValue, "NO VALID FILTERQUERY")) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
 
         }
 

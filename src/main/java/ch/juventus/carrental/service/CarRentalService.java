@@ -12,6 +12,7 @@ public interface CarRentalService {
     void createNewCar(Car newCar);
 
     boolean createNewRental(Long id, Rental rental);
+    boolean doesCarMatch(Car car, CarFilterDto dto);
 
 
 
