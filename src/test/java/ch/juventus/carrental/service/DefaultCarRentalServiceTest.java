@@ -7,9 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.lang.reflect.GenericArrayType;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultCarRentalServiceTest {
 
@@ -32,20 +33,35 @@ class DefaultCarRentalServiceTest {
     @Test
     void testGetCarList() {
 
-        System.out.println(defaultCarRentalService.getCarList());
-
-        //TODO write Test
+        assertEquals("[]", defaultCarRentalService.getCarList());
 
     }
 
     @Test
     void testGetCarById() {
 
-        System.out.println(defaultCarRentalService.getCarById(0L));
-
-        //TODO write Test
+        assertEquals("null", defaultCarRentalService.getCarById(0L));
 
     }
+
+    @Test
+    void testGetCarListFiltered() {
+
+        String testFilterQuery = "{\"startDate\":null,\"endDate\":null,\"searchQuery\":\"test\",\"type\":null,\"gearShift\":null,\"minPricePerDay\":null,\"maxPricePerDay\":null,\"seats\":null,\"airCondition\":true}";
+
+        assertEquals("[]", defaultCarRentalService.getFilteredCars(testFilterQuery));
+
+    }
+
+    @Test
+    void testUpdateCar() {
+
+        Car testCar = new Car("testCar", Type.CABRIO, GearShift.AUTOMATIC, 4, 100D, true);
+
+        //assertTrue(defaultCarRentalService.updateCarById(0L, testCar));
+    }
+
+
 
 
 
