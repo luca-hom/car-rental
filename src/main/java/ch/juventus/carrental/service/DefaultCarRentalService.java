@@ -161,6 +161,13 @@ public class DefaultCarRentalService implements CarRentalService {
 
             CarFilterDto filterDto = mapper.readValue(filterQuery, CarFilterDto.class);
 
+            if (filterDto.getEndDate() != null && filterDto.getStartDate() != null) {
+                if (filterDto.getEndDate().isBefore(filterDto.getStartDate())) {
+                    logger.warn("StartDate cannot be after EndDate, returning empty List");
+                    return "{}";
+                }
+            }
+
             List<Car> carList = carRepository.getCarListFromJsonFile("src/main/resources/cars.json");
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             List<Car> filteredList;
@@ -190,7 +197,6 @@ public class DefaultCarRentalService implements CarRentalService {
      * @return true if the car can be shown in list, false if not
      */
     public boolean doesCarMatch(Car car, CarFilterDto dto) {
-
 
         List<Rental> rentalList = car.getRentals();
         if (rentalList != null && !rentalList.isEmpty()) {
@@ -278,6 +284,7 @@ public class DefaultCarRentalService implements CarRentalService {
     }
 
 
+
     /**
      * creates a new car in the database
      *
@@ -317,6 +324,12 @@ public class DefaultCarRentalService implements CarRentalService {
             }
 
             if (rental.getStartDate() != null && rental.getEndDate() != null) {
+
+                if (rental.getEndDate().isBefore(rental.getStartDate())) {
+                    logger.warn("StartDate cannot be after EndDate");
+                    return false;
+                }
+
                 List<LocalDate> dateList = rental.getStartDate().datesUntil(rental.getEndDate()).toList().stream().toList();
 
                 if (compareRentalDates(rentalList, dateList)) {
@@ -328,7 +341,6 @@ public class DefaultCarRentalService implements CarRentalService {
 
             if (rental.getStartDate() == null || rental.getEndDate() == null) {
                 logger.warn("cannot rent car with rental of no StartDate or EndDate");
-
                 return false;
 
             }
