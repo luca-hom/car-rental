@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -195,6 +196,17 @@ public class DefaultCarRentalService implements CarRentalService {
         if (rentalList != null && !rentalList.isEmpty()) {
 
 
+            if (dto.getStartDate() != null && dto.getEndDate() != null) {
+
+                List<LocalDate> dateList = dto.getStartDate().datesUntil(dto.getEndDate()).toList().stream().toList();
+
+                if (compareRentalDates(rentalList, dateList)) {
+                    return false;
+                }
+
+            }
+
+
             if (dto.getEndDate() != null && (rentalList.stream().anyMatch
                     (rental -> (rental.getStartDate().datesUntil(rental.getEndDate()).toList().contains(dto.getEndDate()))))) {
 
@@ -245,6 +257,26 @@ public class DefaultCarRentalService implements CarRentalService {
 
     }
 
+    /**
+     * compares a list of rentals with a dateList if any date is matching.
+     *
+     * @param dateList List of dates
+     * @param rentalList List of rentals
+     * @return true if there has been a match in the rental list with one of the dates in dateList
+     */
+
+    public boolean compareRentalDates(List<Rental> rentalList, List<LocalDate> dateList) {
+
+        List<List<LocalDate>> compareList = new ArrayList<>();
+        rentalList.forEach(r -> compareList.add(r.getStartDate().datesUntil(r.getEndDate()).toList()));
+
+        List<LocalDate> compareListAll = new ArrayList<>();
+        compareList.forEach(compareListAll::addAll);
+
+        return dateList.stream().anyMatch(compareListAll::contains);
+
+    }
+
 
     /**
      * creates a new car in the database
@@ -282,6 +314,16 @@ public class DefaultCarRentalService implements CarRentalService {
             if (rentalList.stream().anyMatch(r -> (r.getStartDate().datesUntil(r.getEndDate()).toList().contains(rental.getEndDate())))) {
                 logger.warn("there is already a rental for car(id: {}) taken at date: {} ", id, rental.getEndDate());
                 return false;
+            }
+
+            if (rental.getStartDate() != null && rental.getEndDate() != null) {
+                List<LocalDate> dateList = rental.getStartDate().datesUntil(rental.getEndDate()).toList().stream().toList();
+
+                if (compareRentalDates(rentalList, dateList)) {
+                    logger.warn("there is already a rental for car(id: {}) taken between date {} and {} ", id, rental.getStartDate(), rental.getEndDate());
+                    return false;
+                }
+
             }
 
             if (rental.getStartDate() == null || rental.getEndDate() == null) {

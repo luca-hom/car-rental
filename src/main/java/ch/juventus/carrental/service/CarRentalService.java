@@ -1,6 +1,7 @@
 package ch.juventus.carrental.service;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface CarRentalService {
     String getCarList();
@@ -12,8 +13,6 @@ public interface CarRentalService {
 
     boolean createNewRental(Long id, Rental rental);
     boolean doesCarMatch(Car car, CarFilterDto dto);
-
-
 
 
 }
